@@ -45,7 +45,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------
 """
-__version__ = '0.0.6'
+__version__ = '0.1.0'
 __author__ = 'Chris Marrison'
 
 # import boto3
@@ -171,8 +171,11 @@ def lambda_handler(event, context):
     # client = boto3.client('lambda')
 
     if auth(event):
+        if "queryStringParameters" in event:
+            if event['queryStringParameters'].get('minutes'):
+                minutes = int(event['queryStringParameters'].get('minutes'))
         
-        response = get_audit_logs(b1ini='b1.ini', minutes=5)
+        response = get_audit_logs(b1ini='b1.ini', minutes=minutes)
         success = True
         message = json.dumps(response)
         
