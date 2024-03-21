@@ -57,6 +57,23 @@ the bloxone module as parameters.
     b1(cfg_file='config.ini', api_key='', url='https://csp.infoblox.com', api_version='v1')
 
 
+Proof of Concept Usage
+----------------------
+
+When the code is deployed as a simple Lambda configured with the appropriate
+bloxone layer the Lambda can be called directly via URL. When calling the 
+function URL the script defaults to pulling the any audit log entries form
+the last 15 minutes. This can be modified by provide the parameter 
+*?minutes=n* where n is the number of minutes of logs required as part of the 
+URL. For example::
+
+  https://<lamda_function_url>/?minutes=60
+
+
+Data is returned in JSON as a list of events. Note that if no events have
+occured within the number of specified minutes the function will return an
+empty list: **[]**
+
 
 License
 -------
