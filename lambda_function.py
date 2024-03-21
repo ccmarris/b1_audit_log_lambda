@@ -45,10 +45,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------
 """
-__version__ = '0.0.5'
+__version__ = '0.0.6'
 __author__ = 'Chris Marrison'
 
-import boto3
+# import boto3
 import datetime
 import json
 import logging
@@ -89,7 +89,7 @@ def auth(event):
 
     return authorised
 
-
+"""
 def check_timestamp(timestamp: str,
                      minutes:int = 15):
         '''
@@ -147,13 +147,28 @@ def get_audit_logs(b1ini='b1ini', minutes=15):
             break
     
     return results
+"""
+
+
+def get_audit_logs(b1ini='b1.ini', minutes=15):
+    '''
+    '''
+    b1 = bloxone.b1platform(b1ini)
+    now = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(minutes=minutes)
+    filter = f"created_at>'{now.strftime('%Y-%m-%dT%H:%M:%SZ')}'"
+    logging.debug(f'Filter: {filter}')
+
+    response = b1.auditlog(_filter=filter)
+
+    return response
 
 
 def lambda_handler(event, context):
     # TODO implement
     message = {}
     success = False
-    client = boto3.client('lambda')
+    minutes = 15
+    # client = boto3.client('lambda')
 
     if auth(event):
         
