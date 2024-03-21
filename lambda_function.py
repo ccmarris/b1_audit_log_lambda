@@ -157,7 +157,7 @@ def lambda_handler(event, context):
 
     if auth(event):
         
-        response = get_audit_logs(b1ini='b1ini', minutes=5)
+        response = get_audit_logs(b1ini='b1.ini', minutes=5)
         success = True
         message = json.dumps(response)
         
