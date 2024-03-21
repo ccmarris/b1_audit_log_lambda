@@ -15,7 +15,7 @@
 
  Author: Chris Marrison
 
- Date Last Updated: 20240301
+ Date Last Updated: 20240320
 
 Copyright 2024 Chris Marrison / Infoblox
 
@@ -48,7 +48,7 @@ POSSIBILITY OF SUCH DAMAGE.
 __version__ = '0.0.1'
 __author__ = 'Chris Marrison'
 
-import boto3
+# import boto3
 import datetime
 import json
 import logging
@@ -90,7 +90,66 @@ def auth(event):
         authorised = True    
 
     return authorised
+
+
+def check_timestamp(timestamp: str,
+                     minutes:int = 15):
+        '''
+        Compare timestamp to now - n minutes
+        
+        Parameters:
+            timestamp: str = Timestamp to compare
+            days: int = Number of days to compare
+        
+        Returns:
+            bool
+        '''
+        status: bool = False
+
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
+        delta = now - datetime.timedelta(minutes=minutes)
+        ts = datetime.datetime.fromisoformat(timestamp)
+        print(f'Now = {now}, delta = {delta}, ts = {ts}')
+
+		# Check whether timestamp of oldest record is older than delta
+        if ts < delta:
+            status = True
+        else:
+            status = False
+
+        return status
+
+
+def get_audit_logs(b1ini='b1ini', minutes=15):
+    '''
+    '''
+    offset = 0
+    limit = 10
+    results = []
+
+    b1 = bloxone.b1platform(b1ini)
+    while True:
+        logging.debug(f'Current length of results = {len(results)}')
+        logging.debug(f'Offset = {offset}')
+        response = b1.auditlog(_limit=str(limit), _offset=str(offset))
+        if response:
+            timestamp = response[len(response)-1].get('created_at')
+            if len(timestamp) > 0:
+                if check_timestamp(timestamp=timestamp, minutes=minutes):
+                    logging.debug('Break on timestamp')
+                    results += response
+                    break
+            else:
+                logging.debug('Break on no timestamp')
+                break
+            offset += limit
+            results += response
+        else:
+            logging.debug('Break on no response')
+            break
     
+    return results
+
 
 def lambda_handler(event, context):
     # TODO implement
@@ -100,8 +159,7 @@ def lambda_handler(event, context):
 
     if auth(event):
         
-        b1 = bloxone.b1platform('b1.ini')
-        response = b1.auditlog(_limit='100')
+        response = get_audit_logs(b1ini='b1ini', minutes=5)
         success = True
         message = json.dumps(response)
         
