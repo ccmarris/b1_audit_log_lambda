@@ -45,15 +45,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------
 """
-__version__ = '0.0.1'
+__version__ = '0.0.5'
 __author__ = 'Chris Marrison'
 
-# import boto3
+import boto3
 import datetime
 import json
 import logging
-import os
-import time
 import bloxone
 
 # ** Functions **
