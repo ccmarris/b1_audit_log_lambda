@@ -19,8 +19,8 @@ Prerequisites
 
 AWS Lambda Layer configured with: 
 
-Python 3.11+
-bloxone python module and dependencies
+| Python 3.11+
+| bloxone python module and dependencies
 
 A sample layer is included in the *layers* directory of this project.
 
